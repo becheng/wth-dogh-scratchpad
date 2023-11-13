@@ -9,7 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: My First Step
-        run: echo "Hello, world 1!"
+        run: echo "Hello, world ${{ env.MY_NAME }}!"
+        env:
+          MY_NAME: "Mona"
 
       - name: My Second Step
         run: echo "Hello, world 2!"
