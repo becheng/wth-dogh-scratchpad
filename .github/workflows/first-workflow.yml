@@ -15,6 +15,7 @@ jobs:
         run: echo "Hello, world 2!"
 
   job-2:
+    needs: job-1
     name: job-2
     runs-on: ubuntu-latest
     steps:
