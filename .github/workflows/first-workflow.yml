@@ -1,0 +1,25 @@
+name: My First Workflow
+
+on:
+  workflow_dispatch: # add this event to trigger the workflow manually
+
+jobs:
+  job-1:
+    name: job-1
+    runs-on: ubuntu-latest
+    steps:
+      - name: My First Step
+        run: echo "Hello, world 1!"
+
+      - name: My Second Step
+        run: echo "Hello, world 2!"
+
+  job-2:
+    name: job-2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ship it
+        uses: mscoutermarsh/cowsays-action@master
+        with:
+          text: 'ship ship ship!'
+          color: 'red'
