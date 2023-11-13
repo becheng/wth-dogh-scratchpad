@@ -3,6 +3,9 @@ name: My First Workflow
 on:
   workflow_dispatch: # add this event to trigger the workflow manually
 
+env:
+  wf_color: "blue"
+
 jobs:
   job-1:
     name: job-1
@@ -25,4 +28,4 @@ jobs:
         uses: mscoutermarsh/cowsays-action@master
         with:
           text: 'ship ship ship!'
-          color: 'red'
+          color: ${{ env.wf_color }}
