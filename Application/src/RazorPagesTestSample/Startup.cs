@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RazorPagesTestSample.Data;
 
+//a comment to test CI build
 namespace RazorPagesTestSample
 {
     public class Startup
