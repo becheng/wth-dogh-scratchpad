@@ -28,3 +28,18 @@ jobs:
       run: dotnet build --no-restore ./Application/src/RazorPagesTestSample/
     - name: Test
       run: dotnet test --no-build --verbosity normal ./Application/tests/RazorPagesTestSample.Tests/
+    
+    - name: force fail
+      run: exit 1
+
+      # create a github issue if the build fails
+    - name: Create Github Issue
+      if: ${{ failure() }} # only run when this job is failed.    
+      uses: dacbd/create-issue-action@v1.2.1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        title: .NET Build Failed
+        body: Workflow failed for commit ${{github.sha}}
+        labels: test-label-1, test-label-2 
+        assignees: ${{github.actor}}
+              
