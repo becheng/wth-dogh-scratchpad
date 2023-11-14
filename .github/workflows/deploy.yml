@@ -1,4 +1,4 @@
-name: My First Workflow
+name: Build and Deploy
 
 on:
   workflow_dispatch: # add this event to trigger the workflow manually
