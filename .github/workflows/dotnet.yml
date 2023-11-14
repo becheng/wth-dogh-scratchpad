@@ -35,9 +35,10 @@ jobs:
       # create a github issue if the build fails
     - name: Create Github Issue
       if: ${{ failure() }} # only run when this job is failed.    
-      uses: mrdoodles/open-issue@v1.0.0
+      uses: dacbd/create-issue-action@v1.2.1
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         title: .NET Build Failed
         body: Workflow failed for commit ${{github.sha}}
+        labels: test-label-1, test-label-2 
         assignees: ${{github.actor}}
