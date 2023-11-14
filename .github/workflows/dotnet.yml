@@ -6,10 +6,10 @@ name: .NET
 on:
   push:
     paths:
-    - './Application/'
+    - './Application/**'
   pull_request:
     paths:
-    - './Application/'
+    - './Application/**'
 
 jobs:
   build:
