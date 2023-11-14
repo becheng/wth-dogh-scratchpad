@@ -2,8 +2,6 @@ name: Build and Deploy
 
 on:
   workflow_dispatch: # add this event to trigger the workflow manually
-  
-  workflow_call:
     inputs:
       environmentName:
         description: 'name of the environment to deploy'
