@@ -5,11 +5,11 @@ name: .NET
 
 on:
   push:
-    paths:
-    - './Application/**'
+    branches: ['master']
+    paths: ['Application/**']      
   pull_request:
-    paths:
-    - './Application/**'
+    branches: ['master']
+    paths: ['Application/**']      
 
 jobs:
   build:
