@@ -14,7 +14,7 @@ on:
 env:
   registryName: ttohdufc24zjwwthreg.azurecr.io
   repositoryName: wth/dotnetcoreapp
-  dockerfilePath: Application/src/RazorPagesTestSample
+  dockerFolderPath: Application/src/RazorPagesTestSample
   tag: ${{ github.run_number }}
 
 jobs:
@@ -50,6 +50,7 @@ jobs:
         assignees: ${{github.actor}}
 
   docker-build:
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
@@ -58,3 +59,12 @@ jobs:
     - name: Docker Login
       run: |
         docker login ${{ env.registryName }} -u ${{ secrets.ACR_USERNAME }} -p ${{ secrets.ACR_PASSWORD }}
+
+    - name: Docker Build
+      run: |
+        docker build -t ${{ env.registryName }}/${{ env.repositoryName }}:${{ env.tag }} --build-arg build_version=${{ env.tag }} ${{ env.dockerFolderPath }}
+
+    - name: Docker Push
+      run: |
+        docker push ${{ env.registryName }}/${{ env.repositoryName }}:${{ env.tag }}
+  
