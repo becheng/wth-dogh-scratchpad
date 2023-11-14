@@ -19,7 +19,7 @@ jobs:
 
       - uses: azure/arm-deploy@v1
         with:
-          scope: resourceGroup
+          scope: resourcegroup
           resourceGroupName: ${{ env.resourceGroupName }}  
           template: ./Infrastructure/main.bicep
           parameters: environmentName=${{ env.environmentName }}
