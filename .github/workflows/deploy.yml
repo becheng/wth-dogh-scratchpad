@@ -1,0 +1,25 @@
+name: My First Workflow
+
+on:
+  workflow_dispatch: # add this event to trigger the workflow manually
+
+env:
+  environmentName: ${{ vars.environmentName }}
+  resourceGroupName: ${{ vars.resourceGroupName }}
+
+jobs:
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - uses: azure/arm-deploy@v1
+        with:
+          scope: resourceGroup
+          resourceGroupName: ${{ env.resourceGroupName }}  
+          template: ./Infrastructure/main.bicep
+          parameters: environmentName=${{ env.environmentName }}
