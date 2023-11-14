@@ -2,7 +2,14 @@ name: Build and Deploy
 
 on:
   workflow_dispatch: # add this event to trigger the workflow manually
-
+  
+  workflow_call:
+    inputs:
+      environmentName:
+        description: 'name of the environment to deploy'
+        default: 'dev'
+        required: true
+        type: string
 env:
   environmentName: ${{ vars.environmentName }}
   resourceGroupName: ${{ vars.resourceGroupName }}
@@ -25,4 +32,4 @@ jobs:
           scope: resourcegroup
           resourceGroupName: ${{ env.resourceGroupName }}  
           template: ./InfrastructureAsCode/main.bicep
-          parameters: environment=${{ env.environmentName }}
+          parameters: environment=${{ inputs.environmentName }}
