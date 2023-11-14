@@ -1,0 +1,60 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET
+
+on:
+  push:
+    branches: ['master']
+    paths: ['Application/**']      
+  pull_request:
+    branches: ['master']
+    paths: ['Application/**']      
+
+env:
+  registryName: ttohdufc24zjwwthreg.azurecr.io
+  repositoryName: wth/dotnetcoreapp
+  dockerfilePath: Application/src/RazorPagesTestSample
+  tag: ${{ github.run_number }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    
+    - name: Restore dependencies
+      run: dotnet restore ./Application/src/RazorPagesTestSample/
+
+    - name: Build
+      run: dotnet build --no-restore ./Application/src/RazorPagesTestSample/
+
+    - name: Test
+      run: dotnet test --no-build --verbosity normal ./Application/tests/RazorPagesTestSample.Tests/
+          
+      # create a github issue if the build fails
+    - name: Create Github Issue
+      if: ${{ failure() }} # only run when this job is failed.    
+      uses: dacbd/create-issue-action@v1.2.1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        title: .NET Build Failed
+        body: Workflow failed for commit ${{github.sha}}
+        labels: test-label-1, test-label-2 
+        assignees: ${{github.actor}}
+
+  docker-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Docker Login
+      run: |
+        docker login ${{ env.registryName }} -u ${{ secrets.ACR_USERNAME }} -p ${{ secrets.ACR_PASSWORD }}
