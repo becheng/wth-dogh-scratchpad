@@ -1,0 +1,112 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET with Docker with Continuous Delivery
+
+on:
+  push:
+    branches: ['master']
+    paths: ['Application/**']      
+  pull_request:
+    branches: ['master']
+    paths: ['Application/**']      
+    
+env:
+  registryName: ttohdufc24zjwwthreg.azurecr.io
+  repositoryName: wth/dotnetcoreapp
+  dockerFolderPath: Application/src/RazorPagesTestSample
+  tag: ${{ github.run_number }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    
+    - name: Restore dependencies
+      run: dotnet restore ./Application/src/RazorPagesTestSample/
+
+    - name: Build
+      run: dotnet build --no-restore ./Application/src/RazorPagesTestSample/
+
+    - name: Test
+      run: dotnet test --no-build --verbosity normal ./Application/tests/RazorPagesTestSample.Tests/
+          
+      # create a github issue if the build fails
+    - name: Create Github Issue
+      if: ${{ failure() }} # only run when this job is failed.    
+      uses: dacbd/create-issue-action@v1.2.1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        title: .NET Build Failed
+        body: Workflow failed for commit ${{github.sha}}
+        labels: test-label-1, test-label-2 
+        assignees: ${{github.actor}}
+
+  docker-build:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Docker Login
+      run: |
+        docker login ${{ env.registryName }} -u ${{ secrets.ACR_USERNAME }} -p ${{ secrets.ACR_PASSWORD }}
+
+    - name: Docker Build
+      run: |
+        docker build -t ${{ env.registryName }}/${{ env.repositoryName }}:${{ env.tag }} --build-arg build_version=${{ env.tag }} ${{ env.dockerFolderPath }}
+
+    - name: Docker Push
+      run: |
+        docker push ${{ env.registryName }}/${{ env.repositoryName }}:${{ env.tag }}
+  
+  deploy-to-dev:
+    needs: docker-build
+    runs-on: ubuntu-latest
+    environment: dev
+    env:
+      environmentName: ${{ vars.environmentName }}
+    
+    steps:
+    - name: Deploy Web App
+      uses: Azure/webapps-deploy@v2
+      with:
+        app-name: ttohdufc24zjw-${{env.environmentName}} 
+        images: ${{ env.registryName }}/${{ env.repositoryName }}:${{ env.tag }}
+
+  deploy-to-test:
+    needs: docker-build
+    runs-on: ubuntu-latest
+    environment: test
+    env:
+      environmentName: ${{ vars.environmentName }}
+
+    steps:
+    - name: Deploy Web App
+      uses: Azure/webapps-deploy@v2
+      with:
+        app-name: ttohdufc24zjw-${{env.environmentName}} 
+        images: ${{ env.registryName }}/${{ env.repositoryName }}:${{ env.tag }}
+      
+  deploy-to-prod:
+    needs: docker-build
+    runs-on: ubuntu-latest
+    environment: prod
+    env:
+      environmentName: ${{ vars.environmentName }}
+
+    steps:
+    - name: Deploy Web App
+      uses: Azure/webapps-deploy@v2
+      with:
+        app-name: ttohdufc24zjw-${{env.environmentName}} 
+        images: ${{ env.registryName }}/${{ env.repositoryName }}:${{ env.tag }}
+      
