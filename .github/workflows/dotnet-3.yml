@@ -76,6 +76,10 @@ jobs:
       environmentName: ${{ vars.environmentName }}
     
     steps:
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
     - name: Deploy Web App
       uses: Azure/webapps-deploy@v2
       with:
@@ -90,6 +94,10 @@ jobs:
       environmentName: ${{ vars.environmentName }}
 
     steps:
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
     - name: Deploy Web App
       uses: Azure/webapps-deploy@v2
       with:
@@ -104,6 +112,10 @@ jobs:
       environmentName: ${{ vars.environmentName }}
 
     steps:
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+  
     - name: Deploy Web App
       uses: Azure/webapps-deploy@v2
       with:
